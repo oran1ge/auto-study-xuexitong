@@ -1,7 +1,10 @@
+import os
 from tool.DeepSeekAsk import DeepSeekAsk
 import json
 from selenium.webdriver.common.by import By
 import time
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def get_answer(question_title, question_type):
     """
@@ -11,7 +14,7 @@ def get_answer(question_title, question_type):
     :return: 答案列表
     """
     answer = []
-    with open('account_info.json', 'r', encoding='utf-8') as f:
+    with open(os.path.join(BASE_DIR, 'account_info.json'), 'r', encoding='utf-8') as f:
         data = json.load(f)
         api = data['deepseek_API_KEY']
     try:

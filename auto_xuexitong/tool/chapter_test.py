@@ -1,9 +1,12 @@
+import os
 import json
 import time
 
 from selenium.webdriver.common.by import By
 from tool.DeepSeekAsk import DeepSeekAsk
 from tool.decode_secret import DecodeSecret
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def is_finished_test(driver):
     """
@@ -140,8 +143,7 @@ def finished_test_target(driver):
     if not questions_title:
         return
 
-    # 读取 API 密钥
-    with open('account_info.json', 'r', encoding='utf-8') as f:
+    with open(os.path.join(BASE_DIR, 'account_info.json'), 'r', encoding='utf-8') as f:
         account_info = json.load(f)
     api = account_info['deepseek_API_KEY']
 

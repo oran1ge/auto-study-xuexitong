@@ -1,3 +1,4 @@
+import os
 import time
 
 from selenium import webdriver
@@ -7,6 +8,8 @@ from tool.watch_video import finished_video_target
 from selenium.common import NoSuchWindowException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def start_edge_driver():
@@ -30,7 +33,7 @@ def turn_page(page_name, driver):
 def save_cookie_to_file(driver):
     """将当前浏览器 cookies 保存到 cookies.json 文件"""
     cookies = driver.get_cookies()
-    with open('cookies.json', 'w') as f:
+    with open(os.path.join(BASE_DIR, 'cookies.json'), 'w') as f:
         json.dump(cookies, f, ensure_ascii=False, indent=4)
     print('cookies已经保存到文件', flush=True)
 
@@ -40,7 +43,7 @@ def auto_login_with_cookie(driver, path='https://i.chaoxing.com/'):
     尝试通过之前保存的 cookie 跳过登录
     :return: True=登录成功, False=需要重新登录
     """
-    with open('cookies.json', 'r') as f:
+    with open(os.path.join(BASE_DIR, 'cookies.json'), 'r') as f:
         cookies = json.load(f)
     for cookie in cookies:
         try:
@@ -63,7 +66,7 @@ def login_study(driver, path='https://i.chaoxing.com/'):
     print('进入登录页面', flush=True)
 
     # 从 account_info.json 读取账号密码
-    with open('account_info.json', 'r', encoding='utf-8') as f:
+    with open(os.path.join(BASE_DIR, 'account_info.json'), 'r', encoding='utf-8') as f:
         account_info = json.load(f)
     phone_number = account_info['phone_number']
     password = account_info['password']
@@ -107,7 +110,7 @@ def save_course_to_file(driver):
     driver.switch_to.frame('frame_content')
     elements = driver.find_elements(By.CLASS_NAME, 'course-name')
     courses = [el.text for el in elements]
-    with open('courses.json', 'w', encoding='utf-8') as f:
+    with open(os.path.join(BASE_DIR, 'courses.json'), 'w', encoding='utf-8') as f:
         json.dump(courses, f, ensure_ascii=False, indent=4)
     print('课程保存成功', flush=True)
 
@@ -117,7 +120,7 @@ def into_course(course_name, driver):
     从课程列表中找到指定课程并进入
     :param course_name: 课程名称
     """
-    with open('courses.json', 'r', encoding='utf-8') as f:
+    with open(os.path.join(BASE_DIR, 'courses.json'), 'r', encoding='utf-8') as f:
         course_list = json.load(f)
 
     if course_name in course_list:
@@ -141,6 +144,7 @@ def into_course(course_name, driver):
         print('进入课程成功', flush=True)
     else:
         print('未找到课程，请确认课程名称正确', flush=True)
+        exit(1)
 
 
 def find_target(driver, target='章节'):
@@ -174,7 +178,9 @@ def find_target(driver, target='章节'):
                 time.sleep(1)
                 print('进入第一个未完成任务点', flush=True)
                 break
-
+        else:
+            print('所有任务全部完成', flush=True)
+            exit(0)
 
 def skip_reminer(driver):
     """
